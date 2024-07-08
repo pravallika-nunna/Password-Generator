@@ -2,12 +2,13 @@ import random
 import string
 
 class Password:
-    def __init__(self, include_upper, include_lower, include_numbers, include_special, length):
+    def __init__(self, include_upper, include_lower, include_numbers, include_special, length, exclude_char):
         self.include_upper = include_upper.lower() == 'y'
         self.include_lower = include_lower.lower() == 'y'
         self.include_numbers = include_numbers.lower() == 'y'
         self.include_special = include_special.lower() == 'y'
         self.length = length
+        self.exclude_char = exclude_char
 
         # Define character sets
         self.lowercase = string.ascii_lowercase if self.include_lower else ""
@@ -24,15 +25,16 @@ class Password:
         return ''.join(random.choice(characters) for _ in range(segment_length))
     
     def static_random_part(self,keyword = ""):
-         # Ensure the keyword meets minimum complexity requirements
-        if not any(char.isdigit() for char in keyword):
-            keyword += random.choice(string.digits)
-        if not any(char.isupper() for char in keyword):
+        # Ensure the keyword meets minimum complexity requirements
+        if self.include_lower and not any(char.isupper() for char in keyword):
             keyword += random.choice(string.ascii_uppercase)
-        if not any(char in self.special for char in keyword):
-            keyword += random.choice(self.special)
-        if not any(char.islower() for char in keyword):
+        if self.include_upper and not any(char.islower() for char in keyword):
             keyword += random.choice(string.ascii_lowercase)
+        if self.special and not any(char in self.special for char in keyword):
+            keyword += random.choice(self.special)
+        if self.include_numbers and not any(char.isdigit() for char in keyword):
+            keyword += random.choice(string.digits)
+        
 
         # Remaining length after adding keyword
         remaining_length = self.length - len(keyword)
@@ -45,12 +47,11 @@ class Password:
         password = keyword + random_segment
         #random.shuffle(list(password))
         
-        return ''.join(password)
-
+        return password
     # Generates password with keyword
     def keyword_password(self, keyword):
-        if len(keyword) > self.length:
-            raise ValueError("Keyword length cannot be greater than the desired password length")
+        #if len(keyword) > self.length:
+        #    raise ValueError("Keyword length cannot be greater than the desired password length")
         
         return self.static_random_part(keyword)
 
@@ -58,9 +59,10 @@ class Password:
     # Generates password without keyword
     def without_keyword_password(self):
         # Combine all character sets
-        password = self.static_random_part()
+        static_part = self.static_random_part()
+        remaining_len = self.length - len(static_part)
         all_chars = self.lowercase + self.uppercase + self.digits + self.special
-        password = self.get_random_segment(all_chars, self.length)
+        password = static_part + self.get_random_segment(all_chars, remaining_len)
 
         return password
 
@@ -72,11 +74,13 @@ class PasswordGenerator:
         self.include_numbers = None
         self.include_special = None
         self.length = None
+        self.exclude_char = None
 
     def validate_input_length(self):
         valid_len = len(self.keyword) + (self.include_upper == 'y') + (self.include_lower == 'y') + (self.include_numbers == 'y') + (self.include_special == 'y')
         if self.length < valid_len:
-            print("Password length must be greater than or equal to the sum of the selected character sets")
+            print("Password length must be greater than or equal to the sum of the selected character sets and keyword length")
+            print("Password mustbe greater than", valid_len)
             return False
         return True
 
@@ -87,15 +91,17 @@ class PasswordGenerator:
         self.include_numbers = input("Include numbers? (y/n): ")
         self.include_special = input("Include special characters? (y/n): ")
         self.length = int(input("Enter the desired password length: "))
+        self.exclude_char = input("Any characters to exclude ? ")
 
     def generate_password(self):
         self.get_user_input()
         
         if not self.validate_input_length():
-            self.generate_password()
+            self.length = int(input("Enter desired password length"))
+            #self.generate_password()
         
         # Instantiate the Password class
-        p1 = Password(self.include_upper, self.include_lower, self.include_numbers, self.include_special, self.length)
+        p1 = Password(self.include_upper, self.include_lower, self.include_numbers, self.include_special, self.length, self.exclude_char)
         
         # Generate password based on user input
         if self.keyword == "":
