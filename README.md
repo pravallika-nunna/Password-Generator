@@ -1,5 +1,3 @@
-# EncryptPassword
-
 # Password Generator
 
 This project is a simple password generator that creates strong passwords based on user preferences. The passwords can include alphanumeric characters, special characters, and can vary in length. Additionally, users can provide an optional input word to be included in the password.
