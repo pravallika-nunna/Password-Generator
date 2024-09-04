@@ -1,0 +1,166 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 400px;  /* Reduced width for a more compact form */
+    margin: 30px auto;  /* Reduced margin for a tighter layout */
+    padding: 15px;  /* Slightly reduced padding */
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 20px;  /* Reduced font size for a more compact appearance */
+    margin-bottom: 15px;  /* Reduced bottom margin */
+}
+
+.password-output {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;  /* Reduced bottom margin */
+}
+
+.password-output input[type="text"] {
+    width: 75%;  /* Slightly reduced width */
+    padding: 8px;  /* Reduced padding */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px;  /* Reduced margin-right */
+}
+
+.password-output button {
+    background-color: black;
+    color: white;
+    padding: 8px;  /* Reduced padding */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.password-output button:hover {
+    background-color: black;
+}
+
+.copy-icon {
+    width: 18px;  /* Reduced size */
+    height: 18px;  /* Reduced size */
+}
+
+.form-group {
+    margin-bottom: 15px;  /* Reduced bottom margin */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 14px;  /* Reduced font size */
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: calc(100% - 20px);  /* Adjusted width to account for padding */
+    padding: 8px;  /* Reduced padding */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group .include-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;  /* Reduced gap for a more compact layout */
+}
+
+.include-option {
+    display: flex;
+    align-items: center;
+}
+
+.include-option input[type="checkbox"] {
+    width: 18px;  /* Reduced width */
+    height: 18px;  /* Reduced height */
+    border-radius: 50%;  /* Circular checkboxes */
+    margin-right: 5px;  /* Reduced margin-right */
+    appearance: none;
+    background-color: white;
+    border: 2px solid black;
+    cursor: pointer;
+}
+
+.include-option input[type="checkbox"]:checked {
+    background-color: black;
+    border: 2px solid black;
+}
+
+button[type="button"] {
+    display: block;
+    width: 100%;
+    padding: 8px;  /* Reduced padding */
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;  /* Reduced font size */
+}
+
+button[type="button"]:hover {
+    background-color: black;
+}
+
+.password-strength {
+    margin-top: 15px;  /* Reduced top margin */
+    text-align: center;
+}
+
+.password-strength label {
+    font-weight: bold;
+    margin-right: 5px;  /* Reduced margin-right */
+    font-size: 14px;  /* Reduced font size */
+}
+
+.password-strength span {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;  /* Reduced font size */
+}
+
+#copy-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+}
+
+.copy-icon {
+    width: 20px;
+    height: 20px;
+}
+
+#copy-button:hover .copy-icon {
+    opacity: 0.8;
+}
+
+#copy-button:focus {
+    outline: 2px solid #007bff;
+}
+
+#copy-button:focus .copy-icon {
+    border: 2px solid #007bff;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.8em;  /* Reduced font size */
+    margin-top: 3px;  /* Reduced margin-top */
+    display: block;
+}

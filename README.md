@@ -21,3 +21,11 @@ Updated Example Usage:
 Created an instance of the Password class (p1).
 Generated a password with a keyword using keyword_password() method.
 Generated a password without a keyword using without_keyword_password() method.
+
+
+##
+1. workflow with classes and fucntions
+2. Inheritance
+3. Redudancy
+4. ML Model train and include - classification
+5. Update readme.md file

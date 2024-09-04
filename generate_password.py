@@ -1,6 +1,7 @@
 import random
 import string
 from typing import Dict, Any, Optional
+import re
 
 class Password:
     def __init__(self, options: Dict[str, Any]) -> None:
@@ -11,11 +12,17 @@ class Password:
         self.exclude_char = options.get('exclude_char', '')
         self.length = options.get('length', 8)
 
+        # Escape special characters for inclusion in regex
+        if self.exclude_char:
+            escaped_exclude_char = re.escape(self.exclude_char)
+        else:
+            escaped_exclude_char = ""
+
         # Define character sets
-        self.lowercase = ''.join(c for c in string.ascii_lowercase if c not in self.exclude_char) if self.include_lower else ""
-        self.uppercase = ''.join(c for c in string.ascii_uppercase if c not in self.exclude_char) if self.include_upper else ""
-        self.digits = ''.join(c for c in string.digits if c not in self.exclude_char) if self.include_numbers else ""
-        self.special = ''.join(c for c in "-_.@#$?" if c not in self.exclude_char) if self.include_special else ""
+        self.lowercase = re.sub(f"[{escaped_exclude_char}]", '', string.ascii_lowercase) if self.exclude_char else string.ascii_lowercase
+        self.uppercase = re.sub(f"[{escaped_exclude_char}]", '', string.ascii_uppercase) if self.exclude_char else string.ascii_uppercase
+        self.digits = re.sub(f"[{escaped_exclude_char}]", '', string.digits) if self.exclude_char else string.digits
+        self.special = re.sub(f"[{escaped_exclude_char}]", '', "-_.@#$?") if self.exclude_char else "-_.@#$?"
 
         # Validate at least one character set is selected
         if not (self.lowercase or self.uppercase or self.digits or self.special):
@@ -26,13 +33,13 @@ class Password:
 
     def static_random_part(self, keyword: str = "") -> str:
         # Ensure the keyword meets minimum complexity requirements
-        if self.include_lower and self.lowercase and not any(char.islower() for char in keyword):
+        if self.include_lower and not re.search('[a-z]', keyword):
             keyword += random.choice(self.lowercase)
-        if self.include_upper and self.uppercase and not any(char.isupper() for char in keyword):
+        if self.include_upper and not re.search('[A-Z]', keyword):
             keyword += random.choice(self.uppercase)
-        if self.include_special and self.special and not any(char in self.special for char in keyword):
+        if self.include_special and not re.search(r'[-_.@#$?]', keyword):
             keyword += random.choice(self.special)
-        if self.include_numbers and self.digits and not any(char.isdigit() for char in keyword):
+        if self.include_numbers and not re.search(r'[0-9]', keyword):
             keyword += random.choice(self.digits)
 
         # Remaining length after adding keyword
@@ -40,19 +47,23 @@ class Password:
 
         # Combine all character sets
         all_chars = self.lowercase + self.uppercase + self.digits + self.special
-        random_segment = self.get_random_segment(all_chars, remaining_length)
-
-        # Create password
-        password = keyword + random_segment
+        if remaining_length > 0:
+            random_segment = self.get_random_segment(all_chars, remaining_length)
+            # Create password
+            password = keyword + random_segment
+        else:
+            password = keyword[:self.length]
 
         return password
 
     def password_generator(self, keyword: str = "") -> str:
-        # Combine all character sets
         static_part = self.static_random_part(keyword)
         remaining_len = self.length - len(static_part)
-        all_chars = self.lowercase + self.uppercase + self.digits + self.special
-        password = static_part + self.get_random_segment(all_chars, remaining_len)
+        if remaining_len > 0:
+            all_chars = self.lowercase + self.uppercase + self.digits + self.special
+            password = static_part + self.get_random_segment(all_chars, remaining_len)
+        else:
+            password = static_part[:self.length]
 
         return password
 
@@ -69,7 +80,7 @@ class PasswordGenerator:
         self.keyword: Optional[str] = None
 
     def validate_input_length(self) -> bool:
-        valid_len = len(self.keyword) + sum(1 for key in self.options if self.options[key] == 'y')
+        valid_len = len(self.keyword or '') + sum(1 for key in self.options if self.options[key] == True)
 
         if not isinstance(self.options['length'], int):
             print("Password length must be an integer.")
@@ -80,26 +91,22 @@ class PasswordGenerator:
             print("Password must be greater than", valid_len)
             return False
         return True
-    
+
     def validate(self) -> bool:
-        # Validate at least one character set is selected
         if not any(self.options[key] for key in ['include_lower', 'include_upper', 'include_numbers', 'include_special']):
             print("At least one character set must be selected")
             return False
         return True
 
     def get_user_input(self) -> None:
-        self.keyword = input("Enter a keyword (Optional): ")
+        self.keyword = input("Enter a keyword (Optional): ").strip()
 
         def validate_yes_no(prompt: str) -> bool:
             while True:
-                try:
-                    value = input(prompt).strip().lower()
-                    if value not in ['y', 'n']:
-                        raise ValueError("Invalid input. Please enter 'y' or 'n'.")
+                value = input(prompt).strip().lower()
+                if re.match('^[yn]$', value):
                     return value == 'y'
-                except ValueError as ve:
-                    print(ve)
+                print("Invalid input. Please enter 'y' or 'n'.")
 
         def validate_positive_int(prompt: str) -> int:
             while True:
@@ -119,6 +126,7 @@ class PasswordGenerator:
         self.options['length'] = validate_positive_int("Enter the desired password length: ")
 
         if not self.validate():
+            print("Invalid options. Please try again.")
             self.get_user_input()
 
     def generate_password(self) -> None:
@@ -126,7 +134,7 @@ class PasswordGenerator:
         
         # Checking the password length
         if not self.validate_input_length():
-            self.options['length'] = int(input("Enter desired password length"))
+            self.options['length'] = self.validate_positive_int("Enter desired password length: ")
         
         # Instantiate the Password class - Create an object
         p1 = Password(self.options)

@@ -1,0 +1,26 @@
+1. Generate Password - [CLass]
+    (i) Initialise - variables with None [__init__]
+    (ii) Validate String Length [Class Function]
+    (iii) Input function - get_user_input [function]
+    (iv) generate_password [function]
+        With Keyword 
+        Without keyword
+
+2. Password - [class]
+    (i) Initialise variables with actual values [__init__]
+        Define character sets
+        Validate at least one character set is selected
+    (ii) Password generating functions  [class functions]
+        {1} keyword_password
+        {2} without_keyword_password
+    (iii) To generate the parts of the Password
+        {1} static_random_part - 
+        {2} random_segment - random chars
+
+3. Add ons
+    {1}New idea to choose the order
+    {2}Symbols to exclude 
+    {3} Password strength
+    {4} Password generator using a model
+
+4. Using HTML, CSS, Js 
