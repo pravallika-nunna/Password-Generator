@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Raleway', sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
@@ -124,13 +124,20 @@ button[type="button"]:hover {
 .password-strength label {
     font-weight: bold;
     margin-right: 5px;  /* Reduced margin-right */
-    font-size: 14px;  /* Reduced font size */
+    font-size: 16px;  /* Slightly increased font size for labels */
 }
 
-.password-strength span {
-    font-weight: bold;
-    color: #333;
-    font-size: 14px;  /* Reduced font size */
+.password-strength p {
+    font-size: 12px;  /* Smaller font size for content */
+    margin: 5px 0;  /* Reduced top and bottom margins */
+    color: #666;  /* Slightly lighter color for content */
+}
+
+#error-message {
+    color: red;
+    font-size: 0.8em;  /* Reduced font size */
+    margin-top: 3px;  /* Reduced margin-top */
+    display: block;
 }
 
 #copy-button {
@@ -156,11 +163,4 @@ button[type="button"]:hover {
 
 #copy-button:focus .copy-icon {
     border: 2px solid #007bff;
-}
-
-.error-message {
-    color: red;
-    font-size: 0.8em;  /* Reduced font size */
-    margin-top: 3px;  /* Reduced margin-top */
-    display: block;
 }

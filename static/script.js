@@ -85,6 +85,9 @@ function checkPasswordStrength(password) {
         if (data.strength) {
             const strength = data.strength;
             document.getElementById('password-strength-value').textContent = strength;
+            document.getElementById('feedback').textContent = data.feedback || 'No feedback available.';
+            document.getElementById('crack-time-seconds').textContent = data.crack_time_seconds || 'N/A';
+            document.getElementById('crack-time-display').textContent = data.crack_time_display || 'N/A';
         } else {
             console.error('Error: No strength returned');
             document.getElementById('password-strength-value').textContent = 'Error checking password strength';

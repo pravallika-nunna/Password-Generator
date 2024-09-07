@@ -13,14 +13,24 @@
         <div class="password-output">
             <input type="text" id="generated-password" readonly>
             <button id="copy-button" onclick="copyPassword()">
-                <img src="{{ url_for('static', filename='copy-icon.jpg') }}" alt="Copy" class="copy-icon">
+                <ion-icon name="copy" class = "copy-icon"></ion-icon>
             </button>
         </div>
 
         <div class="password-strength">
             <label>Password Strength:</label>
-            <span id="password-strength-value"></span>
+            <p id="password-strength-value"></p>
+            
+            <label>Feedback:</label>
+            <p id="feedback"></p>
+            
+            <label>Crack Time (seconds):</label>
+            <p id="crack-time-seconds"></p>
+            
+            <label>Crack Time (display):</label>
+            <p id="crack-time-display"></p>
         </div>
+        
 
         <form id="password-form">
             <div class="form-group">
