@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator</title>
+    <!--<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">-->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+        }
+
+        .navigation a, .navigation button {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .btnLogin-popup {
+            background-color: #555;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btnLogin-popup:hover {
+            background-color: #777;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .password-output {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .password-output input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        ion-icon {
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .password-strength {
+            display: none;
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 8px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btnGenerate {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btnGenerate:hover {
+            background-color: #555;
+        }
+
+        /* Popup Modal Style */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover, .close-button:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2 class="logo">Password Generator</h2>
+    <nav class="navigation">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <button class="btnLogin-popup" id="loginButton">Login</button>
+    </nav>
+</header>
+
+<div class="container">
+    <h3>Password Generator</h3>
+
+    <div class="password-output">
+        <input type="text" id="generated-password" readonly>
+        <button id="copy-button">
+            <ion-icon name="copy-outline" id="copyPassword"></ion-icon>
+        </button>
+    </div>
+
+    <span id="copy-message" style="color: green; margin-left: 10px;"></span>
+
+    <div class="password-strength" id="passwordStrength" style="display: none;">
+        Password Strength: <span id="password-strength-value"></span>
+    </div>
+
+    <button id="password-feedback-button" style="display: none;">Password Feedback</button>
+
+    <div id="feedback-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Password Feedback</h2>
+            <p><strong>Strength:</strong> <span id="password-strength-feedback"></span></p>
+            <p><strong>Feedback:</strong> <span id="password-feedback"></span></p>
+            <p><strong>Crack Time (seconds):</strong> <span id="crack-time-seconds"></span></p>
+            <p><strong>Crack Time (display):</strong> <span id="crack-time-display"></span></p>
+        </div>
+    </div>
+
+    <h4>Include</h4>
+    <div class="checkbox-group">
+        <label><input type="checkbox" id="include-lower"> Lowercase</label>
+        <label><input type="checkbox" id="include-upper"> Uppercase</label>
+        <label><input type="checkbox" id="include-numbers"> Digits</label>
+        <label><input type="checkbox" id="include-special"> Special Characters</label>
+    </div>
+
+    <div class="form-group">
+        <label for="keyword">Include specific characters:</label>
+        <input type="text" id="keyword">
+    </div>
+
+    <div class="form-group">
+        <label for="length">Length of Password:</label>
+        <input type="number" id="length" value="8" min="8" max="128">
+    </div>
+
+    <div class="form-group">
+        <label for="exclude-char">Exclude specific characters:</label>
+        <input type="text" id="exclude-char">
+    </div>
+
+    <button class="btnGenerate" id="generatePassword">Generate Password</button>
+</div>
+
+<script>
+    const copyBtn = document.getElementById('copy-button');
+    const passwordField = document.getElementById('generated-password');
+    const passwordStrength = document.getElementById('passwordStrength');
+    const strengthValue = document.getElementById('password-strength-value');
+    const copyMessage = document.getElementById('copy-message');
+    const feedbackBtn = document.getElementById('password-feedback-button');
+    const feedbackModal = document.getElementById('feedback-modal');
+    const closeModal = document.querySelector('.close-button');
+    const strengthFeedback = document.getElementById('password-strength-feedback');
+    const feedback = document.getElementById('password-feedback');
+    const crackTimeSeconds = document.getElementById('crack-time-seconds');
+    const crackTimeDisplay = document.getElementById('crack-time-display');
+
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(passwordField.value);
+        copyMessage.innerText = 'Password copied to clipboard!';
+    });
+
+    feedbackBtn.addEventListener('click', () => {
+        feedbackModal.style.display = 'block';
+    });
+
+    closeModal.addEventListener('click', () => {
+        feedbackModal.style.display = 'none';
+    });
+
+    document.getElementById('generatePassword').addEventListener('click', async () => {
+        const includeLower = document.getElementById('include-lower').checked;
+        const includeUpper = document.getElementById('include-upper').checked;
+        const includeNumbers = document.getElementById('include-numbers').checked;
+        const includeSpecial = document.getElementById('include-special').checked;
+        const keyword = document.getElementById('keyword').value;
+        const excludeChar = document.getElementById('exclude-char').value;
+        const length = document.getElementById('length').value;
+
+        try {
+            const response = await fetch('/generate-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    includeLower,
+                    includeUpper,
+                    includeNumbers,
+                    includeSpecial,
+                    keyword,
+                    excludeChar,
+                    length
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                const generatedPassword = result.password;
+                const strength = result.strength;
+                const crackTimeSecondsValue = result.crack_time_seconds;
+                const crackTimeDisplayValue = result.crack_time_display;
+                const feedbackText = result.feedback;
+                const warnings = result.warning;
+
+                passwordField.value = generatedPassword;
+                passwordStrength.style.display = 'block';
+                strengthValue.textContent = strength;
+                feedbackBtn.style.display = 'block';
+
+                strengthFeedback.innerText = strength;
+                feedback.innerText = feedbackText;
+                crackTimeSeconds.innerText = crackTimeSecondsValue;
+                crackTimeDisplay.innerText = crackTimeDisplayValue;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+</script>
+
+</body>
+</html>

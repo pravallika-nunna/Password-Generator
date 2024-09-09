@@ -3,8 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPopup = document.querySelector('.btnLogin-popup');
     const loginLink = document.querySelector('.login-link');
     const registerLink = document.querySelector('.register-link');
-    const iconCloseButtons = document.querySelectorAll('.icon-close');
-    const body = document.body;  // Adding reference to body for background blur
+    const iconCloseButtons = document.querySelectorAll('.icon-close'); 
 
     // Open the popup
     btnPopup.addEventListener('click', () => {

@@ -1,10 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Attach event listener for generating password
     document.getElementById('generate-password').addEventListener('click', function() {
         generatePassword();
     });
 
+    // Attach event listener for copying password
     document.getElementById('copy-button').addEventListener('click', function() {
         copyPassword();
+    });
+
+    // Attach event listener for password feedback button
+    document.getElementById('password-feedback-button').addEventListener('click', function() {
+        togglePasswordFeedback(true);
     });
 });
 
@@ -32,6 +39,9 @@ function generatePassword() {
     const includeNumbers = document.getElementById('include-numbers').checked ? 'y' : 'n';
     const excludeChar = document.getElementById('exclude-char').value;
 
+    // Show loading indicator
+    document.getElementById('password-strength-value').textContent = 'Generating...';
+
     fetch('/generate_password', {
         method: 'POST',
         headers: {
@@ -53,6 +63,9 @@ function generatePassword() {
             const generatedPassword = data.password;
             document.getElementById('generated-password').value = generatedPassword;
             checkPasswordStrength(generatedPassword);
+
+            // Show the password feedback button
+            document.getElementById('password-feedback-button').style.display = 'block';
         } else {
             console.error('Error: No password returned');
             document.getElementById('password-strength-value').textContent = 'Error generating password';
@@ -64,12 +77,13 @@ function generatePassword() {
     });
 }
 
-function copyPassword() {
-    const copyText = document.getElementById('generated-password');
-    copyText.select();
-    document.execCommand('copy');
-    // Optional: Provide feedback to the user
-    alert('Password copied to clipboard!');
+function togglePasswordFeedback(show) {
+    const modal = document.getElementById('feedback-modal');
+    if (show) {
+        modal.style.display = 'block';  // Show modal
+    } else {
+        modal.style.display = 'none';   // Hide modal
+    }
 }
 
 function checkPasswordStrength(password) {
@@ -82,19 +96,44 @@ function checkPasswordStrength(password) {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.strength) {
-            const strength = data.strength;
-            document.getElementById('password-strength-value').textContent = strength;
-            document.getElementById('feedback').textContent = data.feedback || 'No feedback available.';
-            document.getElementById('crack-time-seconds').textContent = data.crack_time_seconds || 'N/A';
-            document.getElementById('crack-time-display').textContent = data.crack_time_display || 'N/A';
+        if (data.password_strength_value) {  // Adjusted to match the backend response key
+            const strength = data.password_strength_value;  // Use 'password_strength_value'
+            document.getElementById('password-strength-value').textContent = strength;  // Adjusted ID
+            document.getElementById('password-feedback').textContent = data.feedback || 'No feedback available.';  // Adjusted ID
+            document.getElementById('crack-time-seconds').textContent = data.crack_time_seconds || 'N/A';  // Adjusted ID
+            document.getElementById('crack-time-display').textContent = data.crack_time_display || 'N/A';  // Adjusted ID
         } else {
             console.error('Error: No strength returned');
-            document.getElementById('password-strength-value').textContent = 'Error checking password strength';
+            document.getElementById('password-strength-value').textContent = 'Error checking password strength';  // Adjusted ID
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        document.getElementById('password-strength-value').textContent = 'Error checking password strength';
+        document.getElementById('password-strength-value').textContent = 'Error checking password strength';  // Adjusted ID
+    });
+}
+
+function copyPassword() {
+    const copyText = document.getElementById('generated-password');
+    
+    if (!copyText.value) {
+        alert('No password to copy!');
+        return;
+    }
+
+    // Use Clipboard API to copy text
+    navigator.clipboard.writeText(copyText.value)
+    .then(() => {
+        // Show success message
+        document.getElementById('copy-message').textContent = 'Password copied to clipboard!';
+        
+        // Clear the message after a few seconds
+        setTimeout(() => {
+            document.getElementById('copy-message').textContent = '';
+        }, 2000);
+    })
+    .catch(err => {
+        console.error('Error copying password with Clipboard API:', err);
+        alert('Failed to copy password. Please try manually.');
     });
 }

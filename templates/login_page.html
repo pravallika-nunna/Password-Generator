@@ -21,11 +21,11 @@
         </nav>
     </header>
 
-    <!-- Button to generate and store passwords -->
     <section class="info-section">
         <p class="quirky-text">In the digital shadows, your password is the key. Guard it well, for once it's shared, all could be lost.</p>
-        <button class="btn-generate" onclick="window.location.href='{{ url_for('generate_and_store') }}'">Generate and Store Your Passwords</button>
+        <button class="btn-action">Generate and Store Your Passwords</button>
     </section>
+    
 
     <div class="wrapper">
         <span class="icon-close" id="closeIcon"><ion-icon name="close-outline"></ion-icon></span>
@@ -78,7 +78,7 @@
                 </div>
             </form>
         </div>
-        
+
     </div>
 
     <script src="{{ url_for('static', filename='script_login.js') }}"></script>
