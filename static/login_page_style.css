@@ -329,12 +329,14 @@ body.background-blur {  /* Add blur to the body */
 .flash-messages {
     list-style-type: none;
     padding: 0;
+    margin-bottom: 15px; /* Spacing between messages and the submit button */
 }
+
 .flash-messages li {
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
+    color: red; /* Customize as needed */
+    margin-bottom: 10px;
 }
+
 .error {
     background-color: #f8d7da;
     color: #721c24;

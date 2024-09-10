@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session, get_flashed_messages
 from generate_password import PasswordGenerator
 import sqlite3
 import re
@@ -37,13 +37,19 @@ def is_valid_email(email):
     email_regex = r'^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     return re.match(email_regex, email) is not None
 
+# Check for SQL injection patterns
+def is_suspicious_input(input_string):
+    # Simple pattern check (extend this as needed)
+    suspicious_patterns = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', '--', ';']
+    return any(pattern in input_string.upper() for pattern in suspicious_patterns)
+
 @app.route('/')
 def index():
     if 'logged_in' in session and session['logged_in']:
         return render_template('index.html')  # Password generator page
     else:
         return redirect(url_for('login_page'))
-    
+
 # Check if user exists and return the hashed password if they do
 def get_user_password(email):
     conn = sqlite3.connect('users.db')
@@ -53,11 +59,21 @@ def get_user_password(email):
     conn.close()
     return result[0] if result else None
 
+@app.route('/get-flash-messages')
+def get_flash_messages():
+    messages = get_flashed_messages(with_categories=True)
+    return jsonify({'messages': [{'category': category, 'message': message} for category, message in messages]})
+
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+
+        if is_suspicious_input(email) or is_suspicious_input(password):
+            flash("Suspicious input detected. You have been logged out.", 'error')
+            session.pop('logged_in', None)  # Log out the user if logged in
+            return redirect(url_for('login_page'))
 
         if not is_valid_email(email):
             flash("Invalid email format. Please enter a valid email.", 'error')
@@ -79,12 +95,15 @@ def login_page():
 
     return render_template('login_page.html')
 
-
 @app.route('/register', methods=['POST'])
 def register():
     username = request.form.get('username')
     email = request.form.get('email')
     password = request.form.get('password')
+
+    if is_suspicious_input(username) or is_suspicious_input(email) or is_suspicious_input(password):
+        flash("Suspicious input detected during registration. Please try again.", 'error')
+        return redirect(url_for('register_page'))
 
     if not is_valid_email(email):
         return jsonify({'success': False, 'message': 'Invalid email format. Please enter a valid email.'})
@@ -129,6 +148,7 @@ def generate_password_route():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    flash("Logged out successfully.", 'success')
     return redirect(url_for('login_page'))
 
 if __name__ == '__main__':
