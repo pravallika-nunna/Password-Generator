@@ -325,3 +325,21 @@ body.background-blur {  /* Add blur to the body */
         margin-left: 30px;
     }
 }
+
+.flash-messages {
+    list-style-type: none;
+    padding: 0;
+}
+.flash-messages li {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.success {
+    background-color: #d4edda;
+    color: #155724;
+}
